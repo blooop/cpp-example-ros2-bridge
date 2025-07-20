@@ -49,8 +49,8 @@ cmd = "mkdir -p humble_ws/src && ln -sfn $(pwd)/rerun_bridge humble_ws/src/rerun
 cwd = "."
 
 [tasks.build]
-cmd = "colcon build --packages-select rerun_bridge --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
-depends_on = ["ws"]
+cmd = "colcon build --packages-select rerun_bridge --cmake-args -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+depends-on = ["ws"]
 cwd = "humble_ws"
 
 # Get mcap support from source since its not available in robostack channel
@@ -59,7 +59,7 @@ cwd = "humble_ws"
 [tasks.rosbag2_storage_mcap]
 cmd = """
 (test -d src/rosbag2_storage_mcap || git clone https://github.com/ros-tooling/rosbag2_storage_mcap.git src/rosbag2_storage_mcap)
-&& colcon build --packages-select mcap_vendor rosbag2_storage_mcap_testdata rosbag2_storage_mcap --cmake-args -DCMAKE_BUILD_TYPE=Release
+&& colcon build --packages-select mcap_vendor rosbag2_storage_mcap_testdata rosbag2_storage_mcap --cmake-args -G Ninja -DCMAKE_BUILD_TYPE=Release
 """
 depends_on = ["ws"]
 cwd = "humble_ws"
@@ -93,7 +93,7 @@ depends_on = ["build"]
 [tasks.go2_ros2_sdk]
 cmd = """
 (test -d src/go2_ros2_sdk || git clone --recurse-submodules https://github.com/abizovnuralem/go2_ros2_sdk.git src/go2_ros2_sdk)
-&& colcon build --packages-select unitree_go go2_interfaces go2_robot_sdk --cmake-args -DCMAKE_BUILD_TYPE=Release
+&& colcon build --packages-select unitree_go go2_interfaces go2_robot_sdk --cmake-args -G Ninja -DCMAKE_BUILD_TYPE=Release
 """
 cwd = "humble_ws"
 depends_on = ["ws"]
