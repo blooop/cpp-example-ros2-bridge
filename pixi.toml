@@ -12,7 +12,7 @@
 [project]
 name = "rerun_bridge2"
 authors = ["rerun.io <opensource@rerun.io>"]
-channels = ["robostack-staging", "conda-forge"]
+channels = ["robostack-kilted", "conda-forge"]
 description = "rerun_bridge2"
 homepage = "https://rerun.io"
 license = "MIT OR Apache-2.0"
@@ -45,13 +45,13 @@ lint-typos = "typos"
 # ROS2 stuff:
 
 [tasks.ws]
-cmd = "mkdir -p humble_ws/src && ln -sfn $(pwd)/rerun_bridge humble_ws/src/rerun_bridge"
+cmd = "mkdir -p jazzy_ws/src && ln -sfn $(pwd)/rerun_bridge jazzy_ws/src/rerun_bridge"
 cwd = "."
 
 [tasks.build]
 cmd = "colcon build --packages-select rerun_bridge --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
 depends_on = ["ws"]
-cwd = "humble_ws"
+cwd = "jazzy_ws"
 
 # Get mcap support from source since its not available in robostack channel
 #
@@ -62,29 +62,29 @@ cmd = """
 && colcon build --packages-select mcap_vendor rosbag2_storage_mcap_testdata rosbag2_storage_mcap --cmake-args -DCMAKE_BUILD_TYPE=Release
 """
 depends_on = ["ws"]
-cwd = "humble_ws"
+cwd = "jazzy_ws"
 
 # ------------------------------------------------------------------------------------------
 # CARLA example:
 
 [tasks.carla_example_data]
 cmd = "curl -L -C - -O https://storage.googleapis.com/rerun-example-datasets/carla_ros2.zip && unzip carla_ros2.zip"
-cwd = "humble_ws/install/rerun_bridge/share/rerun_bridge"
-outputs = ["humble_ws/install/rerun_bridge/share/rerun_bridge/carla_ros2"]
+cwd = "jazzy_ws/install/rerun_bridge/share/rerun_bridge"
+outputs = ["jazzy_ws/install/rerun_bridge/share/rerun_bridge/carla_ros2"]
 depends_on = ["build"]
 
 [tasks.carla_example]
 cmd = "bash -c 'source ./install/local_setup.bash && ros2 launch rerun_bridge carla_example.launch'"
 depends_on = ["build", "rerun_viewer", "carla_example_data"]
-cwd = "humble_ws"
+cwd = "jazzy_ws"
 
 # ------------------------------------------------------------------------------------------
 # Go2 example:
 
 [tasks.go2_example_data]
 cmd = "curl -L -C - -O https://storage.googleapis.com/rerun-example-datasets/go2_ros2.zip && unzip go2_ros2.zip"
-cwd = "humble_ws/install/rerun_bridge/share/rerun_bridge"
-outputs = ["humble_ws/install/rerun_bridge/share/rerun_bridge/go2_ros2"]
+cwd = "jazzy_ws/install/rerun_bridge/share/rerun_bridge"
+outputs = ["jazzy_ws/install/rerun_bridge/share/rerun_bridge/go2_ros2"]
 depends_on = ["build"]
 
 # Get the go2_ros2_sdk package
@@ -95,7 +95,7 @@ cmd = """
 (test -d src/go2_ros2_sdk || git clone --recurse-submodules https://github.com/abizovnuralem/go2_ros2_sdk.git src/go2_ros2_sdk)
 && colcon build --packages-select unitree_go go2_interfaces go2_robot_sdk --cmake-args -DCMAKE_BUILD_TYPE=Release
 """
-cwd = "humble_ws"
+cwd = "jazzy_ws"
 depends_on = ["ws"]
 
 [tasks.go2_example]
@@ -107,7 +107,7 @@ depends_on = [
     "rosbag2_storage_mcap",
     "rerun_viewer",
 ]
-cwd = "humble_ws"
+cwd = "jazzy_ws"
 
 # Install Rerun 0.24.0 with native URDF support
 [tasks.rerun_viewer]
@@ -129,13 +129,14 @@ colcon-common-extensions = ">=0.3.0,<0.4"
 # Misc linting:
 typos = ">=1.20.9,<1.21"
 
+
 # Rerun bridge dependencies:
-ros-humble-desktop = ">=0.10.0,<0.11"
+ros-kilted-desktop = ">=0.12.0,<0.13"
 yaml-cpp = ">=0.8.0,<0.9"
-opencv = ">=4.9.0,<4.10"
+# opencv = ">=4.9.0,<4.10"  # Temporarily commented out due to dependency conflicts
 
 # Additional dependencies for mcap support
-ros-humble-rosbag2-test-common = ">=0.15.9,<0.16"
+ros-kilted-rosbag2-test-common = ">=0.27.0,<0.28"
 
 [target.linux-64.dependencies]
 sysroot_linux-64 = ">=2.17,<3" # rustc 1.64+ requires glibc 2.17+, see https://blog.rust-lang.org/2022/08/01/Increasing-glibc-kernel-requirements.html
